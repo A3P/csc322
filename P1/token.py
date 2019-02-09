@@ -1,6 +1,5 @@
 import re
 
-
 class Node(object):
     def __init__(self, data):
         self.data = data
@@ -36,21 +35,21 @@ def atom():
     if(t.lastindex == 2):
         root = Node(t.group(t.lastindex))
         t = scanToken()
-        print t
+        print (t)
 
-        
+
 def scanToken():
     global token
     token = scan.match()
     if(token):
-        print token.lastindex, repr(token.group(token.lastindex))
+        print (token.lastindex), repr(token.group(token.lastindex))
     return token
 
 def getToken():
     return token
 
 def inOrder(root):
-    print "traversal: " ,root
+    print ("traversal: " ,root)
     if root is None:
         return
 
