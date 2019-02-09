@@ -16,7 +16,7 @@ def disj():
     global root
     conj()
     token = getToken()
-    if(token.lastindex == 1):
+    while(token.lastindex == 3):
         d = Node("v")
         d.left = root
         conj()
@@ -32,7 +32,7 @@ def lit():
 def atom():
     global root
     t = scanToken()
-    if(t.lastindex == 2):
+    if(t.lastindex == 7):
         root = Node(t.group(t.lastindex))
         t = scanToken()
         print (t)
@@ -62,8 +62,15 @@ def inOrder(root):
         inOrder(root.right)
 
 
-pattern = re.compile("(?:(v)|(.))")
-expr = "avb"
+pattern = re.compile("(?:"
+"(~)"
+"|(\&)"
+"|(v)"
+"|(->)"
+"|(\()"
+"|(\))"
+"|(A\d+))")
+expr = "((A1vA44)&~A32)->A981"
 
 scan = pattern.scanner(expr)
 
@@ -74,6 +81,7 @@ print(root.left)
 print(root.right)
 
 inOrder(root)
+
 # while 1:
 #     m = scan.match()
 #     if not m:
