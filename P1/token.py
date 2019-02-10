@@ -53,6 +53,9 @@ def atom():
         root = Node(t.group(t.lastindex))
         t = scanToken()
         print (t)
+    elif (t is not None and t.lastindex == 5):
+        sent()
+        scanToken()
 
 
 def scanToken():
@@ -78,7 +81,6 @@ def inOrder(root):
     if root.right is not None:
         inOrder(root.right)
 
-
 pattern = re.compile("(?:"
 "(~)"
 "|(\&)"
@@ -87,7 +89,8 @@ pattern = re.compile("(?:"
 "|(\()"
 "|(\))"
 "|(A\d+))")
-expr = "A1&~A2"
+
+expr = "(A1v~A2)&A3"
 
 scan = pattern.scanner(expr)
 
