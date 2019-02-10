@@ -5,9 +5,11 @@ class Node(object):
         self.data = data
         self.left = None
         self.right = None
+        self.treeNum = 0
 
 token = ""
 root = Node("")
+oddNum = 1
 
 def sent():
     global root
@@ -77,14 +79,19 @@ def getToken():
     return token
 
 def inOrder(root):
-    #print ("traversal: " ,root)
+    global oddNum
     if root is None:
         return
 
     if root.left is not None:
         inOrder(root.left)
 
-    print(root.data)
+    if(root.left is None):
+        root.treeNum = int(root.data[1:]) * 2
+    else:
+        root.treeNum = oddNum
+        oddNum += 2
+    print(root.data, root.treeNum)
 
     if root.right is not None:
         inOrder(root.right)
