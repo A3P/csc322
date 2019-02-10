@@ -167,10 +167,10 @@ def getCNFLine(root):
       line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, -root.treeNum)
       numClauses += 4
     elif t == OROP: #or operator
-      line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, root.treeNum)
-      line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, -root.treeNum)
       numClauses += 4
     elif t == IMPOP: #implication operator
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
