@@ -14,7 +14,7 @@ def sent():
     disj()
     token = getToken()
     if (token is not None and token.lastindex == 4):
-        i = Node("->")
+        i = Node(token.group(token.lastindex))
         i.left = root
         sent()
         i.right = root
@@ -25,7 +25,7 @@ def disj():
     conj()
     token = getToken()
     while(token is not None and token.lastindex == 3):
-        d = Node("v")
+        d = Node(token.group(token.lastindex))
         d.left = root
         conj()
         d.right = root
@@ -37,11 +37,11 @@ def conj():
     lit()
     token = getToken()
     while(token is not None and token.lastindex == 2):
-        d = Node("&")
-        d.left = root
-        conj()
-        d.right = root
-        root = d
+        c = Node(token.group(token.lastindex))
+        c.left = root
+        lit()
+        c.right = root
+        root = c
         token = getToken()
 
 def lit():
@@ -49,7 +49,7 @@ def lit():
     atom()
     token = getToken()
     if(token is not None and token.lastindex == 1):
-        n = Node("~")
+        n = Node(token.group(token.lastindex))
         atom()
         n.left = root
         root = n
@@ -98,7 +98,7 @@ pattern = re.compile("(?:"
 "|(\))"
 "|(A\d+))")
 
-expr = "A1->(A3->A2)"
+expr = "(A1->(A3->A2))&(A4vA5)"
 
 scan = pattern.scanner(expr)
 
