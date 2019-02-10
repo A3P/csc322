@@ -16,15 +16,25 @@ def disj():
     global root
     conj()
     token = getToken()
-    while(token.lastindex == 3):
+    while(token is not None and token.lastindex == 3):
         d = Node("v")
         d.left = root
         conj()
         d.right = root
         root = d
+        token = getToken()
 
 def conj():
+    global root
     lit()
+    token = getToken()
+    while(token is not None and token.lastindex == 2):
+        d = Node("&")
+        d.left = root
+        conj()
+        d.right = root
+        root = d
+        token = getToken()
 
 def lit():
     atom()
@@ -49,7 +59,7 @@ def getToken():
     return token
 
 def inOrder(root):
-    print ("traversal: " ,root)
+    #print ("traversal: " ,root)
     if root is None:
         return
 
@@ -70,15 +80,15 @@ pattern = re.compile("(?:"
 "|(\()"
 "|(\))"
 "|(A\d+))")
-expr = "((A1vA44)&~A32)->A981"
+expr = ""
 
 scan = pattern.scanner(expr)
 
 sent()
 
-print(root)
-print(root.left)
-print(root.right)
+# print(root)
+# print(root.left)
+# print(root.right)
 
 inOrder(root)
 
