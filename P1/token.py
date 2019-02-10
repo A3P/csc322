@@ -39,8 +39,8 @@ def conj():
 def lit():
     global root
     atom()
-    t = getToken()
-    if(t is not None and t.lastindex == 1):
+    token = getToken()
+    if(token is not None and token.lastindex == 1):
         n = Node("~")
         atom()
         n.left = root
@@ -48,12 +48,12 @@ def lit():
 
 def atom():
     global root
-    t = scanToken()
-    if(t is not None and t.lastindex == 7):
-        root = Node(t.group(t.lastindex))
-        t = scanToken()
-        print (t)
-    elif (t is not None and t.lastindex == 5):
+    token = scanToken()
+    if(token is not None and token.lastindex == 7):
+        root = Node(token.group(token.lastindex))
+        token = scanToken()
+        print (token)
+    elif (token is not None and token.lastindex == 5):
         sent()
         scanToken()
 
