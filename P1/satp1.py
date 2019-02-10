@@ -7,7 +7,7 @@
 # Group Members:
 # Yves Belliveau (V00815315)
 # Lance Lansing (V00819401)
-#
+# Ryan Afshar 
 #
 #-------------------------------------------------------------------------------
 import re
@@ -44,6 +44,13 @@ VARSYMB = 7
 #------------------------------------------------------------------
 
 #FUNCTIONS---------------------------------------------------------
+
+#Wrapper function for starting the recursive descent parser
+def createAST():
+  sent()
+
+#Recursive Descent Parser Functions++++++++++++++++++++++++++++
+#implements "SENT ::= DISJ | DISJ IMPOP SENT"
 def sent():
     global root
     disj()
@@ -55,6 +62,7 @@ def sent():
         i.right = root
         root = i
 
+#implements "DISJ ::= CONJ{OROP CONJ>"
 def disj():
     global root
     conj()
@@ -67,6 +75,7 @@ def disj():
         root = d
         token = getToken()
 
+#implements "CONJ ::= LIT{ANDOP LIT}"
 def conj():
     global root
     lit()
@@ -79,6 +88,7 @@ def conj():
         root = c
         token = getToken()
 
+#implements "LIT ::= ATOM | NEGOP ATOM"
 def lit():
     global root
     atom()
@@ -89,6 +99,7 @@ def lit():
         n.left = root
         root = n
 
+#implements "ATOM ::= VAR | LPAREN SENT RPAREN"
 def atom():
     global root
     token = scanToken()
@@ -99,6 +110,7 @@ def atom():
     elif (token is not None and token.lastindex == LPAREN):
         sent()
         scanToken()
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def scanToken():
     global token
@@ -110,14 +122,14 @@ def scanToken():
 def getToken():
     return token
 
-def assignNodeNum(root):
+def ASTtoCNF(root):
     global oddNum
     global maxVar
     if root is None:
         return
 
     if root.left is not None:
-        assignNodeNum(root.left)
+        ASTtoCNF(root.left)
 
     if(root.left is None):
         root.treeNum = int(root.data[1:]) * 2
@@ -131,7 +143,7 @@ def assignNodeNum(root):
     print(root.data, root.treeNum, root.tClass)
 
     if root.right is not None:
-        assignNodeNum(root.right)
+        ASTtoCNF(root.right)
     
     if root.left is not None:
         getCNFLine(root)
@@ -171,6 +183,7 @@ def getCNFLine(root):
 
 #MAIN-----------------------------------------------------------------
 if __name__ == '__main__':
+    #regex pattern for parsing
     pattern = re.compile("(?:"
     "(~)"
     "|(\&)"
@@ -180,17 +193,23 @@ if __name__ == '__main__':
     "|(\))"
     "|(A\d+))")
 
-    expr = "(~A9->A31)&(A13vA44)"
+
+
+    #take first argument as boolean expression if available
+    if len(sys.argv) >= 2:
+      expr = sys.argv[1]
+    else:
+      expr = "(~A9->A31)&(A13vA44)"
 
     scan = pattern.scanner(expr)
 
-    sent()
+    createAST()
 
     # print(root)
     # print(root.left)
     # print(root.right)
 
-    assignNodeNum(root)
+    ASTtoCNF(root)
     minisatInput = "{} 0\n".format(-root.treeNum) + minisatInput
     numClauses += 1
     minisatInput = "p cnf {} {}\n".format(maxVar, numClauses) + minisatInput
