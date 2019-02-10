@@ -7,7 +7,7 @@
 # Group Members:
 # Yves Belliveau (V00815315)
 # Lance Lansing (V00819401)
-# Ryan Afshar 
+# Ryan Afshar (V00864456)
 #
 #-------------------------------------------------------------------------------
 import re
@@ -112,6 +112,7 @@ def atom():
         scanToken()
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+# Scans the next token within the input.
 def scanToken():
     global token
     token = scan.match()
@@ -119,6 +120,7 @@ def scanToken():
     #     printprint (token.lastindex), repr(token.group(token.lastindex))
     return token
 
+# Returns the latest scanned token.
 def getToken():
     return token
 
@@ -209,7 +211,7 @@ if __name__ == '__main__':
     # print(root.right)
 
     ASTtoCNF(root)
-    minisatInput = "{} 0\n".format(-root.treeNum) + minisatInput
+    minisatInput = minisatInput + "{} 0\n".format(-root.treeNum) 
     numClauses += 1
     minisatInput = "p cnf {} {}\n".format(maxVar, numClauses) + minisatInput
     print(minisatInput)
