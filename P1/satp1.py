@@ -1,7 +1,8 @@
+#!/usr/bin/env python
 #-------------------------------------------------------------------------------
 # satp1.py
 # Course: CSC 322
-# Assignment 1
+# Project 1
 #
 # Group Members:
 # Yves Belliveau (V00815315)
@@ -10,7 +11,9 @@
 #
 #-------------------------------------------------------------------------------
 import re
+import sys
 
+#Node class for AST - data is string of operator, tClass is 
 class Node(object):
     def __init__(self, data, tClass):
         self.data = data
@@ -27,6 +30,17 @@ oddNum = 1
 minisatInput = ""
 maxVar = 0
 numClauses = 0 
+
+#Token Class numbers
+NEGOP = 1
+ANDOP = 2
+OROP = 3
+IMPOP = 4
+LPAREN = 5
+RPAREN = 6
+VARSYMB = 7
+
+
 #------------------------------------------------------------------
 
 #FUNCTIONS---------------------------------------------------------
@@ -34,7 +48,7 @@ def sent():
     global root
     disj()
     token = getToken()
-    if (token is not None and token.lastindex == 4):
+    if (token is not None and token.lastindex == IMPOP):
         i = Node(token.group(token.lastindex), token.lastindex)
         i.left = root
         sent()
@@ -45,7 +59,7 @@ def disj():
     global root
     conj()
     token = getToken()
-    while(token is not None and token.lastindex == 3):
+    while(token is not None and token.lastindex == OROP):
         d = Node(token.group(token.lastindex), token.lastindex)
         d.left = root
         conj()
@@ -57,7 +71,7 @@ def conj():
     global root
     lit()
     token = getToken()
-    while(token is not None and token.lastindex == 2):
+    while(token is not None and token.lastindex == ANDOP):
         c = Node(token.group(token.lastindex), token.lastindex)
         c.left = root
         lit()
@@ -69,7 +83,7 @@ def lit():
     global root
     atom()
     token = getToken()
-    if(token is not None and token.lastindex == 1):
+    if(token is not None and token.lastindex == NEGOP):
         n = Node(token.group(token.lastindex), token.lastindex)
         atom()
         n.left = root
@@ -78,11 +92,11 @@ def lit():
 def atom():
     global root
     token = scanToken()
-    if(token is not None and token.lastindex == 7):
+    if(token is not None and token.lastindex == VARSYMB):
         root = Node(token.group(token.lastindex), token.lastindex)
         token = scanToken()
         print (token)
-    elif (token is not None and token.lastindex == 5):
+    elif (token is not None and token.lastindex == LPAREN):
         sent()
         scanToken()
 
@@ -130,23 +144,23 @@ def getCNFLine(root):
     t = root.tClass
     line = ""
 
-    if t == 1: #not operator
+    if t == NEGOP: #not operator
       line = line + "{} {} 0\n".format(-root.left.treeNum, -root.treeNum)
       line = line + "{} {} 0\n".format(root.left.treeNum, root.treeNum)
       numClauses += 2
-    elif t == 2: #and operator
+    elif t == ANDOP: #and operator
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, -root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, -root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, -root.treeNum)
       numClauses += 4
-    elif t == 3: #or operator
+    elif t == OROP: #or operator
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, -root.treeNum)
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, root.treeNum)
       numClauses += 4
-    elif t == 4: #implication operator
+    elif t == IMPOP: #implication operator
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, -root.treeNum)
