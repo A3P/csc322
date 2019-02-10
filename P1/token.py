@@ -37,12 +37,19 @@ def conj():
         token = getToken()
 
 def lit():
+    global root
     atom()
+    t = getToken()
+    if(t is not None and t.lastindex == 1):
+        n = Node("~")
+        atom()
+        n.left = root
+        root = n
 
 def atom():
     global root
     t = scanToken()
-    if(t.lastindex == 7):
+    if(t is not None and t.lastindex == 7):
         root = Node(t.group(t.lastindex))
         t = scanToken()
         print (t)
@@ -80,7 +87,7 @@ pattern = re.compile("(?:"
 "|(\()"
 "|(\))"
 "|(A\d+))")
-expr = ""
+expr = "A1&~A2"
 
 scan = pattern.scanner(expr)
 
