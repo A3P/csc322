@@ -106,7 +106,7 @@ def atom():
     if(token is not None and token.lastindex == VARSYMB):
         root = Node(token.group(token.lastindex), token.lastindex)
         token = scanToken()
-        print (token)
+        # print (token)
     elif (token is not None and token.lastindex == LPAREN):
         sent()
         scanToken()
@@ -115,8 +115,8 @@ def atom():
 def scanToken():
     global token
     token = scan.match()
-    if(token):
-        print (token.lastindex), repr(token.group(token.lastindex))
+    # if(token):
+    #     printprint (token.lastindex), repr(token.group(token.lastindex))
     return token
 
 def getToken():
@@ -140,7 +140,7 @@ def ASTtoCNF(root):
     if root.treeNum > maxVar:
       maxVar = root.treeNum
 
-    print(root.data, root.treeNum, root.tClass)
+    #print(root.data, root.treeNum, root.tClass)
 
     if root.right is not None:
         ASTtoCNF(root.right)
