@@ -1,22 +1,41 @@
+#-------------------------------------------------------------------------------
+# satp1.py
+# Course: CSC 322
+# Assignment 1
+#
+# Group Members:
+# Yves Belliveau (V00815315)
+# Lance Lansing (V00819401)
+#
+#
+#-------------------------------------------------------------------------------
 import re
 
 class Node(object):
-    def __init__(self, data):
+    def __init__(self, data, tClass):
         self.data = data
+        self.tClass = tClass
         self.left = None
         self.right = None
         self.treeNum = 0
 
-token = ""
-root = Node("")
-oddNum = 1
 
+#GLOBAL VARIABLES--------------------------------------------------
+token = ""
+root = Node("", 0)
+oddNum = 1
+minisatInput = ""
+maxVar = 0
+numClauses = 0 
+#------------------------------------------------------------------
+
+#FUNCTIONS---------------------------------------------------------
 def sent():
     global root
     disj()
     token = getToken()
     if (token is not None and token.lastindex == 4):
-        i = Node(token.group(token.lastindex))
+        i = Node(token.group(token.lastindex), token.lastindex)
         i.left = root
         sent()
         i.right = root
@@ -27,7 +46,7 @@ def disj():
     conj()
     token = getToken()
     while(token is not None and token.lastindex == 3):
-        d = Node(token.group(token.lastindex))
+        d = Node(token.group(token.lastindex), token.lastindex)
         d.left = root
         conj()
         d.right = root
@@ -39,7 +58,7 @@ def conj():
     lit()
     token = getToken()
     while(token is not None and token.lastindex == 2):
-        c = Node(token.group(token.lastindex))
+        c = Node(token.group(token.lastindex), token.lastindex)
         c.left = root
         lit()
         c.right = root
@@ -51,7 +70,7 @@ def lit():
     atom()
     token = getToken()
     if(token is not None and token.lastindex == 1):
-        n = Node(token.group(token.lastindex))
+        n = Node(token.group(token.lastindex), token.lastindex)
         atom()
         n.left = root
         root = n
@@ -60,13 +79,12 @@ def atom():
     global root
     token = scanToken()
     if(token is not None and token.lastindex == 7):
-        root = Node(token.group(token.lastindex))
+        root = Node(token.group(token.lastindex), token.lastindex)
         token = scanToken()
         print (token)
     elif (token is not None and token.lastindex == 5):
         sent()
         scanToken()
-
 
 def scanToken():
     global token
@@ -78,50 +96,97 @@ def scanToken():
 def getToken():
     return token
 
-def inOrder(root):
+def assignNodeNum(root):
     global oddNum
+    global maxVar
     if root is None:
         return
 
     if root.left is not None:
-        inOrder(root.left)
+        assignNodeNum(root.left)
 
     if(root.left is None):
         root.treeNum = int(root.data[1:]) * 2
     else:
         root.treeNum = oddNum
         oddNum += 2
-    print(root.data, root.treeNum)
+    
+    if root.treeNum > maxVar:
+      maxVar = root.treeNum
+
+    print(root.data, root.treeNum, root.tClass)
 
     if root.right is not None:
-        inOrder(root.right)
+        assignNodeNum(root.right)
+    
+    if root.left is not None:
+        getCNFLine(root)
 
-pattern = re.compile("(?:"
-"(~)"
-"|(\&)"
-"|(v)"
-"|(->)"
-"|(\()"
-"|(\))"
-"|(A\d+))")
+    
+#format a CNF line for minisat input based on node numbers and operator
+def getCNFLine(root):
+    global minisatInput
+    global numClauses
+    t = root.tClass
+    line = ""
 
-expr = "(A1->(A3->A2))&(A4vA5)"
+    if t == 1: #not operator
+      line = line + "{} {} 0\n".format(-root.left.treeNum, -root.treeNum)
+      line = line + "{} {} 0\n".format(root.left.treeNum, root.treeNum)
+      numClauses += 2
+    elif t == 2: #and operator
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, -root.treeNum)
+      numClauses += 4
+    elif t == 3: #or operator
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, root.treeNum)
+      numClauses += 4
+    elif t == 4: #implication operator
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, root.treeNum)
+      numClauses += 4
+    minisatInput = minisatInput + line
 
-scan = pattern.scanner(expr)
 
-sent()
+#MAIN-----------------------------------------------------------------
+if __name__ == '__main__':
+    pattern = re.compile("(?:"
+    "(~)"
+    "|(\&)"
+    "|(v)"
+    "|(->)"
+    "|(\()"
+    "|(\))"
+    "|(A\d+))")
 
-# print(root)
-# print(root.left)
-# print(root.right)
+    expr = "(~A9->A31)&(A13vA44)"
 
-inOrder(root)
+    scan = pattern.scanner(expr)
 
-# while 1:
-#     m = scan.match()
-#     if not m:
-#         break
-#     print m.lastindex, m.group(m.lastindex)
+    sent()
 
-# t = Node("v")
-# print "My Node: ", t.data,
+    # print(root)
+    # print(root.left)
+    # print(root.right)
+
+    assignNodeNum(root)
+    minisatInput = "{} 0\n".format(-root.treeNum) + minisatInput
+    numClauses += 1
+    minisatInput = "p cnf {} {}\n".format(maxVar, numClauses) + minisatInput
+    print(minisatInput)
+
+    # while 1:
+    #     m = scan.match()
+    #     if not m:
+    #         break
+    #     print m.lastindex, m.group(m.lastindex)
+
+    # t = Node("v")
+    # print "My Node: ", t.data,
