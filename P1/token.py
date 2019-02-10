@@ -10,7 +10,15 @@ token = ""
 root = Node("")
 
 def sent():
+    global root
     disj()
+    token = getToken()
+    if (token is not None and token.lastindex == 4):
+        i = Node("->")
+        i.left = root
+        sent()
+        i.right = root
+        root = i
 
 def disj():
     global root
@@ -90,7 +98,7 @@ pattern = re.compile("(?:"
 "|(\))"
 "|(A\d+))")
 
-expr = "(A1v~A2)&A3"
+expr = "A1->(A3->A2)"
 
 scan = pattern.scanner(expr)
 
