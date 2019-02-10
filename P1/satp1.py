@@ -174,8 +174,8 @@ def getCNFLine(root):
       numClauses += 4
     elif t == IMPOP: #implication operator
       line = line + "{} {} {} 0\n".format(-root.left.treeNum, -root.right.treeNum, root.treeNum)
-      line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, root.treeNum)
-      line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(-root.left.treeNum, root.right.treeNum, -root.treeNum)
+      line = line + "{} {} {} 0\n".format(root.left.treeNum, -root.right.treeNum, root.treeNum)
       line = line + "{} {} {} 0\n".format(root.left.treeNum, root.right.treeNum, root.treeNum)
       numClauses += 4
     minisatInput = minisatInput + line
@@ -183,6 +183,7 @@ def getCNFLine(root):
 
 #MAIN-----------------------------------------------------------------
 if __name__ == '__main__':
+
     #regex pattern for parsing
     pattern = re.compile("(?:"
     "(~)"
@@ -192,8 +193,6 @@ if __name__ == '__main__':
     "|(\()"
     "|(\))"
     "|(A\d+))")
-
-
 
     #take first argument as boolean expression if available
     if len(sys.argv) >= 2:
