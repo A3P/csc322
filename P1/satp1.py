@@ -12,6 +12,7 @@
 #-------------------------------------------------------------------------------
 import re
 import sys
+import subprocess
 
 #Node class for AST - data is string of operator, tClass is 
 class Node(object):
@@ -215,6 +216,12 @@ if __name__ == '__main__':
     numClauses += 1
     minisatInput = "p cnf {} {}\n".format(maxVar, numClauses) + minisatInput
     print(minisatInput)
+
+    # Write minisat input to a file and start a subprocess for minisat.
+    f = open("in", "w+")
+    f.write(minisatInput)
+    f.close()
+    subprocess.call(["minisat", "./in", "./out"])
 
     # while 1:
     #     m = scan.match()
