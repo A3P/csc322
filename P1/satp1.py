@@ -215,13 +215,24 @@ if __name__ == '__main__':
     minisatInput = minisatInput + "{} 0\n".format(-root.treeNum) 
     numClauses += 1
     minisatInput = "p cnf {} {}\n".format(maxVar, numClauses) + minisatInput
-    print(minisatInput)
 
     # Write minisat input to a file and start a subprocess for minisat.
     f = open("in", "w+")
     f.write(minisatInput)
     f.close()
     subprocess.call(["minisat", "./in", "./out"])
+    
+    # Reads output and determine if the expression is valid
+    f = open("out", "r")
+    out = f.read()
+    valid = re.search("UNSAT", out)
+    result = "\n" + expr
+    if valid:
+        print result + " is VALID"
+    else:
+        print result + " is INVALID"
+
+
 
     # while 1:
     #     m = scan.match()
