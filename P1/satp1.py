@@ -158,6 +158,7 @@ def ASTtoCNF(root):
 
     
 #format a CNF line for minisat input based on node numbers and operator
+#adds CNF lines to minisatInput variable
 def getCNFLine(root):
     global minisatInput
     global numClauses
@@ -235,6 +236,7 @@ if __name__ == '__main__':
     # Reads output and determine if the expression is valid
     f = open("out", "r")
     out = f.read()
+    f.close()
     valid = re.search("UNSAT", out)
     result = "\n" + expr
 
