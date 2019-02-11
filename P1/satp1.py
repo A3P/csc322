@@ -31,6 +31,7 @@ oddNum = 1
 minisatInput = ""
 maxVar = 0
 numClauses = 0 
+varNumList = []
 
 #Token Class numbers
 NEGOP = 1
@@ -128,6 +129,7 @@ def getToken():
 def ASTtoCNF(root):
     global oddNum
     global maxVar
+    global varNumList
     if root is None:
         return
 
@@ -136,6 +138,9 @@ def ASTtoCNF(root):
 
     if(root.left is None):
         root.treeNum = int(root.data[1:]) * 2
+        #add variable number to varNumList for task 2
+        if root.treeNum not in varNumList:
+          varNumList.append(root.treeNum)
     else:
         root.treeNum = oddNum
         oddNum += 2
@@ -202,7 +207,7 @@ if __name__ == '__main__':
     vcheckNum = 1
     if len(sys.argv) >= 3:
       expr = sys.argv[2]
-      if sys.argv[1] == 2:
+      if sys.argv[1] == '2':
         vcheckNum = 2
     else:
       expr = "(~A9->A31)&(A13vA44)"
@@ -232,10 +237,30 @@ if __name__ == '__main__':
     out = f.read()
     valid = re.search("UNSAT", out)
     result = "\n" + expr
+
     if valid:
       print result + " is VALID"
     else:
-      print result + " is INVALID"      
+      print result + " is INVALID"
+
+      #segment for vcheck2
+      if vcheckNum == 2:
+        vcheck2output = ""
+        numList = out.split()
+        #split out into its numbers
+        #get the value at each index equal to variable numbers and
+        #append to output string with appropriate truth value
+        for varNum in varNumList:
+          current = int(numList[varNum])
+          truthValue = ""
+          if current < 0:
+            truthValue = "F"
+          elif current > 0:
+            truthValue = "T"
+          vcheck2output = vcheck2output + "A{} = {} ".format(varNum/2, truthValue)
+        print(vcheck2output)
+       
+
     
     # while 1:
     #     m = scan.match()
