@@ -1,5 +1,5 @@
 # Project 1 - CSC322 - Feb 2019
-## Yves Belliveau (V00815315) - Lance Lansing (V00819401) - Amir Afshar (V00864456)
+## Yves Belliveau - Lance Lansing - Amir Afshar
 
 ### vcheck1
 vcheck1 is used by typing "./vcheck1" in the folder containing the executable and then entering a valid input into stdin.

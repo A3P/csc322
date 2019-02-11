@@ -5,10 +5,9 @@
 # Project 1
 #
 # Group Members:
-# Yves Belliveau (V00815315)
-# Lance Lansing (V00819401)
-# Ryan Afshar (V00864456)
-#
+# Yves Belliveau
+# Lance Lansing
+# Ryan Afshar
 #-------------------------------------------------------------------------------
 import re
 import sys
@@ -118,8 +117,6 @@ def atom():
 def scanToken():
     global token
     token = scan.match()
-    # if(token):
-    #     printprint (token.lastindex), repr(token.group(token.lastindex))
     return token
 
 # Returns the latest scanned token.
@@ -147,8 +144,6 @@ def ASTtoCNF(root):
     
     if root.treeNum > maxVar:
       maxVar = root.treeNum
-
-    #print(root.data, root.treeNum, root.tClass)
 
     if root.right is not None:
         ASTtoCNF(root.right)
@@ -218,10 +213,6 @@ if __name__ == '__main__':
 
     createAST()
 
-    # print(root)
-    # print(root.left)
-    # print(root.right)
-
     ASTtoCNF(root)
     minisatInput = minisatInput + "{} 0\n".format(-root.treeNum) 
     numClauses += 1
@@ -261,14 +252,3 @@ if __name__ == '__main__':
             truthValue = "T"
           vcheck2output = vcheck2output + "A{} = {} ".format(varNum/2, truthValue)
         print(vcheck2output)
-       
-
-    
-    # while 1:
-    #     m = scan.match()
-    #     if not m:
-    #         break
-    #     print m.lastindex, m.group(m.lastindex)
-
-    # t = Node("v")
-    # print "My Node: ", t.data,
