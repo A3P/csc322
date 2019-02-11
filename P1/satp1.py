@@ -196,12 +196,17 @@ if __name__ == '__main__':
     "|(\()"
     "|(\))"
     "|(A\d+))")
-
-    #take first argument as boolean expression if available
-    if len(sys.argv) >= 2:
-      expr = sys.argv[1]
+    
+    #set vcheckNum to 2 if 2 is passed (default vcheckNum 1)
+    #and 3rd argument as boolean expression if available
+    vcheckNum = 1
+    if len(sys.argv) >= 3:
+      expr = sys.argv[2]
+      if sys.argv[1] == 2:
+        vcheckNum = 2
     else:
       expr = "(~A9->A31)&(A13vA44)"
+      print("Using example expression: {}".format(expr))
 
     scan = pattern.scanner(expr)
 
@@ -228,12 +233,10 @@ if __name__ == '__main__':
     valid = re.search("UNSAT", out)
     result = "\n" + expr
     if valid:
-        print result + " is VALID"
+      print result + " is VALID"
     else:
-        print result + " is INVALID"
-
-
-
+      print result + " is INVALID"      
+    
     # while 1:
     #     m = scan.match()
     #     if not m:
